@@ -3,4 +3,64 @@ name = "spook-teams"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "spook-teams"
+path = "src/main.rs"
+
+[lib]
+name = "spook_teams"
+path = "src/lib.rs"
+
 [dependencies]
+# MCP SDK
+rmcp = { version = "1.2", features = ["server", "server-side-http", "transport-streamable-http-server", "transport-streamable-http-server-session", "transport-io", "macros", "schemars"] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# HTTP server
+axum = { version = "0.8", features = ["json"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+
+# HTTP client (OpenCode SDK)
+reqwest = { version = "0.12", features = ["json", "stream"] }
+eventsource-client = "0.12"
+
+# Database
+rusqlite = { version = "0.32", features = ["bundled"] }
+r2d2 = "0.8"
+r2d2_sqlite = "0.25"
+
+# Git
+git2 = "0.19"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Logging/tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Async traits
+async-trait = "0.1"
+
+# Error handling
+anyhow = "1"
+thiserror = "2"
+
+# Utilities
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+tokio-util = { version = "0.7", features = ["codec"] }
+bytes = "1"
+futures = "0.3"
+futures-util = "0.3"
+
+[dev-dependencies]
+tempfile = "3"
+tokio-test = "0.4"
