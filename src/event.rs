@@ -1,8 +1,7 @@
 use std::sync::Arc;
 
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
-use tracing::{info, warn};
+use tracing::warn;
 
 use crate::db;
 use crate::db::Db;
@@ -31,18 +30,6 @@ impl EventDispatcher {
             clients: Arc::new(tokio::sync::RwLock::new(std::collections::HashMap::new())),
             workspaces: Arc::new(tokio::sync::RwLock::new(std::collections::HashMap::new())),
         }
-    }
-
-    pub async fn register_client(&self, member_id: String, client: Arc<OpenCodeClient>) {
-        self.clients.write().await.insert(member_id, client);
-    }
-
-    pub async fn register_workspace(&self, member_id: String, workspace: WorkspaceId) {
-        self.workspaces.write().await.insert(member_id, workspace);
-    }
-
-    pub async fn remove_client(&self, member_id: &str) {
-        self.clients.write().await.remove(member_id);
     }
 
     // ── Task completion dispatcher (10.1) ─────────────────────────────────────
@@ -95,7 +82,7 @@ impl EventDispatcher {
         let lead_id = self.find_lead_session(team_id).await;
 
         // Push completion status to lead
-        if let Some((lead_member_id, lead_session_id, client)) = lead_id {
+        if let Some((_lead_member_id, lead_session_id, client)) = lead_id {
             let msg = if all_done {
                 format!(
                     "All tasks complete ({}/{}). Team is ready to converge and merge.",
@@ -121,7 +108,7 @@ impl EventDispatcher {
             }
 
             // Update cmux progress for agent
-            let clients = self.clients.read().await;
+            let _clients = self.clients.read().await;
             let workspaces = self.workspaces.read().await;
             // Find agent's member_id
             if let Ok(Some(member)) = {

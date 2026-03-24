@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use tracing::info;
 
-use crate::db::{self, member::MemberStatus, worktree::WorktreeStatus};
+use crate::db::{self, worktree::WorktreeStatus};
 use crate::server::{
     AppState, CallerContext, GetAgentDiffParams, GetConflictDetailsParams, MergeToMainParams,
     RebaseFromMainParams, WorktreeCleanupParams, WorktreeStatusParams,
@@ -293,7 +293,7 @@ pub async fn get_conflict_details(
     caller: CallerContext,
 ) -> Result<ConflictDetails> {
     let member_id = resolve_caller_member_id(state, &params.team_id, &caller)?;
-    let (agent_name, project_path) = {
+    let (_agent_name, project_path) = {
         let conn = state.db.readers.get()?;
         let member = db::member::get(&conn, &member_id)?
             .ok_or_else(|| anyhow::anyhow!("Member not found"))?;
@@ -409,7 +409,7 @@ pub async fn rebase_from_main(
     caller: CallerContext,
 ) -> Result<RebaseResult> {
     let member_id = resolve_caller_member_id(state, &params.team_id, &caller)?;
-    let (agent_name, project_path) = {
+    let (agent_name, _project_path) = {
         let conn = state.db.readers.get()?;
         let member = db::member::get(&conn, &member_id)?
             .ok_or_else(|| anyhow::anyhow!("Member not found"))?;

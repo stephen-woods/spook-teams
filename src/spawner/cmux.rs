@@ -119,7 +119,6 @@ impl Spawner for CmuxSpawner {
     ) -> Result<SurfaceId> {
         let dir = match direction {
             SplitDirection::Right => "right",
-            SplitDirection::Down => "down",
         };
         let result = self
             .call(
@@ -207,11 +206,5 @@ impl Spawner for CmuxSpawner {
             .and_then(|v| v.as_str())
             .unwrap_or("")
             .to_string())
-    }
-
-    async fn destroy_workspace(&self, workspace: &WorkspaceId) -> Result<()> {
-        self.call("destroy-workspace", json!({ "workspace": workspace.0 }))
-            .await?;
-        Ok(())
     }
 }

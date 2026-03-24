@@ -24,7 +24,7 @@ fn setup() -> (Arc<Db>, TempDir, String, String, String) {
         let conn = db.writer.lock().unwrap();
         member::create(&conn, &team_rec.id, "alice", member::MemberRole::Worker).unwrap()
     };
-    let bob = {
+    let _bob = {
         let conn = db.writer.lock().unwrap();
         member::create(&conn, &team_rec.id, "bob", member::MemberRole::Worker).unwrap()
     };

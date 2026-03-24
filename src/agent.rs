@@ -422,7 +422,7 @@ pub async fn agent_status(
 // ── agent_kill (12.5) ─────────────────────────────────────────────────────────
 
 pub async fn agent_kill(state: &AppState, params: AgentKillParams) -> Result<AgentKillResult> {
-    let (member, project_path) = {
+    let (member, _project_path) = {
         let conn = state.db.readers.get()?;
         let member = db::member::get(&conn, &params.member_id)?
             .ok_or_else(|| anyhow::anyhow!("Member not found: {}", params.member_id))?;

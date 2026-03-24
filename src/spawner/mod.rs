@@ -5,7 +5,7 @@ use std::path::Path;
 
 pub mod cmux;
 
-pub use cmux::CmuxSpawner;
+
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -20,7 +20,6 @@ pub struct SurfaceId(pub String);
 #[derive(Debug, Clone)]
 pub enum SplitDirection {
     Right,
-    Down,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -90,9 +89,6 @@ pub trait Spawner: Send + Sync {
 
     /// Read the screen content (for crash context capture).
     async fn read_screen(&self, workspace: &WorkspaceId) -> Result<String>;
-
-    /// Destroy a workspace and all its panes.
-    async fn destroy_workspace(&self, workspace: &WorkspaceId) -> Result<()>;
 }
 
 // ── HeadlessSpawner ───────────────────────────────────────────────────────────
@@ -160,11 +156,6 @@ impl Spawner for HeadlessSpawner {
     async fn read_screen(&self, workspace: &WorkspaceId) -> Result<String> {
         tracing::debug!("HeadlessSpawner: read_screen({})", workspace.0);
         Ok(String::new())
-    }
-
-    async fn destroy_workspace(&self, workspace: &WorkspaceId) -> Result<()> {
-        tracing::debug!("HeadlessSpawner: destroy_workspace({})", workspace.0);
-        Ok(())
     }
 }
 

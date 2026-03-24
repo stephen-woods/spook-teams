@@ -356,7 +356,7 @@ pub fn resolve_caller_member_id(
     }
 }
 
-pub fn resolve_caller_name(state: &AppState, team_id: &str, caller: &CallerContext) -> String {
+pub fn resolve_caller_name(state: &AppState, _team_id: &str, caller: &CallerContext) -> String {
     match caller {
         CallerContext::Lead => "lead".to_string(),
         CallerContext::Worker { profile_id } => {

@@ -1,7 +1,6 @@
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use std::time::Duration;
 use tokio::process::{Child, Command};
 use tokio::sync::broadcast;
@@ -132,8 +131,8 @@ impl OpenCodeClient {
 
 /// A managed opencode serve child process.
 pub struct ManagedProcess {
-    pub port: u16,
-    pub worktree: std::path::PathBuf,
+    pub _port: u16,
+    pub _worktree: std::path::PathBuf,
     child: Child,
 }
 
@@ -150,8 +149,8 @@ pub async fn spawn_serve(port: u16, worktree: &std::path::Path) -> Result<Manage
 
     tracing::info!(port, worktree = %worktree.display(), "Spawned opencode serve");
     Ok(ManagedProcess {
-        port,
-        worktree: worktree.to_path_buf(),
+        _port: port,
+        _worktree: worktree.to_path_buf(),
         child,
     })
 }
@@ -178,11 +177,6 @@ impl ManagedProcess {
             }
         }
         Ok(())
-    }
-
-    /// Get the process ID.
-    pub fn pid(&self) -> Option<u32> {
-        self.child.id()
     }
 }
 

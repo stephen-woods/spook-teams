@@ -103,29 +103,3 @@ pub fn insert_agent_event(
         created_at: now,
     })
 }
-
-pub fn get_latest_event(
-    conn: &Connection,
-    member_id: &str,
-    event_type: &str,
-) -> Result<Option<AgentEvent>> {
-    let result = conn
-        .query_row(
-            "SELECT id, team_id, member_id, event_type, payload, created_at
-             FROM agent_events WHERE member_id = ?1 AND event_type = ?2
-             ORDER BY created_at DESC LIMIT 1",
-            params![member_id, event_type],
-            |row| {
-                Ok(AgentEvent {
-                    id: row.get(0)?,
-                    team_id: row.get(1)?,
-                    member_id: row.get(2)?,
-                    event_type: row.get(3)?,
-                    payload: row.get(4)?,
-                    created_at: row.get(5)?,
-                })
-            },
-        )
-        .ok();
-    Ok(result)
-}

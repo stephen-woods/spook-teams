@@ -1,6 +1,5 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 use tracing::{info, warn};
 
 use crate::db::{self, member::MemberRole, member::MemberStatus, task::TaskFilter};

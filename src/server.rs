@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use anyhow::Result;
-use axum::Router;use rmcp::{
+use rmcp::{
     ServerHandler,
     handler::server::{router::tool::ToolRouter, wrapper::Parameters},
     model::{Implementation, ServerCapabilities, ServerInfo},
@@ -12,7 +12,7 @@ use axum::Router;use rmcp::{
     },
 };
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use tokio::net::TcpListener;
 use tokio_util::sync::CancellationToken;
 use tracing::{info, warn};
@@ -69,10 +69,6 @@ pub enum CallerContext {
 }
 
 impl CallerContext {
-    pub fn is_lead(&self) -> bool {
-        matches!(self, CallerContext::Lead)
-    }
-
     pub fn profile_id(&self) -> Option<&str> {
         match self {
             CallerContext::Worker { profile_id } => Some(profile_id),
@@ -182,7 +178,7 @@ pub struct TaskCompleteParams {
     /// Task source_id or UUID
     pub task_id: String,
     /// Optional summary of what was done
-    pub summary: Option<String>,
+    pub _summary: Option<String>,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -272,6 +268,7 @@ pub struct SpookTeamsHandler {
     /// If Some, this instance serves a specific worker (identified by profile_id in HTTP header).
     /// If None, this instance serves via stdio (lead).
     pub caller: Option<String>,
+    #[allow(dead_code)]
     tool_router: ToolRouter<Self>,
 }
 
@@ -284,14 +281,6 @@ impl SpookTeamsHandler {
         }
     }
 
-    pub fn with_caller(state: AppState, caller: String) -> Self {
-        Self {
-            state,
-            caller: Some(caller),
-            tool_router: Self::tool_router(),
-        }
-    }
-
     pub fn caller_context(&self) -> CallerContext {
         match &self.caller {
             Some(id) => CallerContext::Worker {
@@ -299,32 +288,6 @@ impl SpookTeamsHandler {
             },
             None => CallerContext::Lead,
         }
-    }
-
-    /// Resolve a task by either its source_id or UUID for a given team.
-    fn resolve_task_id(
-        &self,
-        team_id: &str,
-        task_id: &str,
-    ) -> Result<String, rmcp::ErrorData> {
-        // First try as UUID directly
-        {
-            let conn = self.state.db.readers.get()
-                .map_err(|e| rmcp::ErrorData::internal_error(e.to_string(), None))?;
-            if let Ok(Some(task)) = crate::db::task::get(&conn, task_id) {
-                if task.team_id == team_id {
-                    return Ok(task.id);
-                }
-            }
-            // Try as source_id
-            if let Ok(Some(task)) = crate::db::task::get_by_source_id(&conn, team_id, task_id) {
-                return Ok(task.id);
-            }
-        }
-        Err(rmcp::ErrorData::invalid_params(
-            format!("Task not found: {}", task_id),
-            None,
-        ))
     }
 }
 
